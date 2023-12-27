@@ -40,27 +40,27 @@ def sample(
     if version == "svd":
         num_frames = default(num_frames, 14)
         num_steps = default(num_steps, 25)
-        output_folder = default(output_folder, os.path.join(os.getcwd(), "generative", "outputs", "simple_video_sample", "svd") + "/")
-        model_config = os.path.join(os.getcwd(), "generative", "scripts", "sampling", "configs", 'svd.yaml')
+        output_folder = default(output_folder, os.path.join(os.getcwd(), "outputs", "simple_video_sample", "svd") + "/")
+        model_config = os.path.join(os.getcwd(), "scripts", "sampling", "configs", 'svd.yaml')
     elif version == "svd_xt":
         num_frames = default(num_frames, 25)
         num_steps = default(num_steps, 30)
-        output_folder = default(output_folder, os.path.join(os.getcwd(), "generative", "outputs", "simple_video_sample", "svd_xt") + "/")
-        model_config = os.path.join(os.getcwd(), "generative", "scripts", "sampling", "configs", 'svd_xt.yaml')
+        output_folder = default(output_folder, os.path.join(os.getcwd(), "outputs", "simple_video_sample", "svd_xt") + "/")
+        model_config = os.path.join(os.getcwd(), "scripts", "sampling", "configs", 'svd_xt.yaml')
     elif version == "svd_image_decoder":
         num_frames = default(num_frames, 14)
         num_steps = default(num_steps, 25)
         output_folder = default(
-            output_folder, os.path.join(os.getcwd(), "generative", "outputs", "simple_video_sample", "svd_image_decoder") + "/"
+            output_folder, os.path.join(os.getcwd(), "outputs", "simple_video_sample", "svd_image_decoder") + "/"
         )
-        model_config = os.path.join(os.getcwd(), "generative", "scripts", "sampling", "configs", 'svd_image_decoder.yaml')
+        model_config = os.path.join(os.getcwd(), "scripts", "sampling", "configs", 'svd_image_decoder.yaml')
     elif version == "svd_xt_image_decoder":
         num_frames = default(num_frames, 25)
         num_steps = default(num_steps, 30)
         output_folder = default(
-            output_folder, os.path.join(os.getcwd(), "generative", "outputs", "simple_video_sample", "svd_xt_image_decoder") + "/"
+            output_folder, os.path.join(os.getcwd(), "outputs", "simple_video_sample", "svd_xt_image_decoder") + "/"
         )
-        model_config = os.path.join(os.getcwd(), "generative", "scripts", "sampling", "configs", 'svd_xt_image_decoder.yaml')
+        model_config = os.path.join(os.getcwd(), "scripts", "sampling", "configs", 'svd_xt_image_decoder.yaml')
     else:
         raise ValueError(f"Version {version} does not exist.")
 

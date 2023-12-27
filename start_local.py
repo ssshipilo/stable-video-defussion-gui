@@ -1,10 +1,11 @@
 from model import sample
 from fire import Fire
 import os
+import torch
 
 if __name__ == "__main__":
     # Путь к картинке - Это путь к изображению, которое будет использоваться для создания видео.
-    input_path          = os.path.join(os.getcwd(), "assets", "test_image.png")
+    input_path          = os.path.join(os.getcwd(), "assets", "photo_2023-12-27_17-59-20.jpg")
     num_frames          = 25    # Количесвто фреймов
     num_steps           = 15    # Количество шагов - Это параметр, указывающий, сколько шагов выполнить при создании видео.
     # Версия 
