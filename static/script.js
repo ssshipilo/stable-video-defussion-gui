@@ -24,37 +24,83 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     socket.emit('update_files');
 
-    function processImage() {
-        const input = document.getElementById('imageInput');
+    function generation_video() {
+        const input = document.getElementById('file-input');
         const file = input.files[0];
-
+    
         if (file) {
             const reader = new FileReader();
-
             reader.onload = (e) => {
-                const image_data = e.target.result;
-                const parameters = { /* ваш объект параметров */ };
-
-                socket.emit('process_image', { image: image_data, parameters: parameters });
+                let image = file;
+    
+                let select_version = document.getElementById('select-version').value;
+                let fps_version = document.getElementById('fps-version').value;
+                let num_steps = document.getElementById('num_steps').value;
+                let fps_id = document.getElementById('fps_id').value;
+                let motion_bucket = document.getElementById('motion_bucket').value;
+                let cond_aug = document.getElementById('cond_aug').value;
+                let seed = document.getElementById('seed').value;
+                let decoding_t = document.getElementById('decoding_t').value;
+    
+                let formData = new FormData();
+                formData.append('file', image);
+                formData.append('select_version', select_version);
+                formData.append('fps_version', fps_version);
+                formData.append('num_steps', num_steps);
+                formData.append('fps_id', fps_id);
+                formData.append('motion_bucket', motion_bucket);
+                formData.append('cond_aug', cond_aug);
+                formData.append('seed', seed);
+                formData.append('decoding_t', decoding_t);
+    
+                $.ajax({
+                    method: 'POST',
+                    url: '/generatevideo',
+                    processData: false,
+                    contentType: false,
+                    data: formData
+                }).done(function (msg) {
+                    console.log(msg);
+                    alert('Data Saved: ' + msg);
+                    document.querySelector('.generate .text').style.display = 'flex'
+                    document.querySelector('.generate .loader').style.display = 'none'
+                }).fail(function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    $.toast({
+                        heading: 'Generate Video',
+                        text: `[${errorMessage}]: ${xhr.responseJSON.message}`,
+                        icon: 'info',
+                        loader: true,
+                        status: "error",
+                        loaderBg: '#f3450b',
+                        bgColor: '#ee3c25',
+                    })
+                    document.querySelector('.generate .text').style.display = 'flex'
+                    document.querySelector('.generate .loader').style.display = 'none'
+                });
             };
-
             reader.readAsDataURL(file);
         }
     }
 
+    document.querySelector('.generate').addEventListener('click', ()=>{
+        document.querySelector('.generate .text').style.display = 'none'
+        document.querySelector('.generate .loader').style.display = 'flex'
+        generation_video()
+    })
 
     // Функция для обновления информации о виртуальной памяти и полосы прогресса
     function updateMemoryInfo(memoryData) {
         document.getElementById('total-memory').innerText = memoryData.total_memory;
         document.getElementById('used-memory').innerText = memoryData.used_memory;
-        document.getElementById('free-memory').innerText = memoryData.free_memory;
+        // document.getElementById('free-memory').innerText = memoryData.free_memory;
 
         // Обновляем полосу прогресса
         const totalMemory = parseFloat(memoryData.total_memory);
         const usedMemory = parseFloat(memoryData.used_memory);
         const percentageUsed = (usedMemory / totalMemory) * 100;
 
-        document.getElementById('used-progress').style.width = percentageUsed + '%';
+        // document.getElementById('used-progress').style.width = percentageUsed + '%';
     }
 
     // Функция для обновления списка файлов
@@ -111,6 +157,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function downloadFile(filename, data_ex) {
+        window.location.href = '/download/' + filename + "" + data_ex;
+    }
+    function deleteFile(filename) {
+        console.log(filename)
+        fetch('/delete_file/' + filename, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                $.toast({
+                    heading: 'Delete file',
+                    text: "File deleted successfully",
+                    icon: 'info',
+                    loader: true,
+                    loaderBg: '#9EC600'
+                })
+                socket.emit('update_files');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
     // Функция для загрузки файла на сервер
     function uploadFile() {
         const fileInput = document.getElementById('fileInput');
@@ -137,33 +207,40 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
         }
     }
-
-    function downloadFile(filename, data_ex) {
-        window.location.href = '/download/' + filename + "" + data_ex;
-    }
-    function deleteFile(filename) {
-        console.log(filename)
-        fetch('/delete_file/' + filename, {
-            method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                $.toast({
-                    heading: 'Delete file',
-                    text: "File deleted successfully",
-                    icon: 'info',
-                    loader: true,
-                    loaderBg: '#9EC600'
-                })
-                socket.emit('update_files');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
+    
 });
 
+document.querySelectorAll('.numeric-input input').forEach((item)=>{
+    item.addEventListener('input', (e)=>{
+        validateNumericInput(e.currentTarget)
+    })
+})
 
+function validateNumericInput(input) {
+    const minValue = parseInt(input.getAttribute('min'))
+    const maxValue = parseInt(input.getAttribute('max'))
+    let value = parseInt(input.value, 10);
+    if (isNaN(value)) {
+        value = minValue;
+    }
+
+    if (value < minValue) {
+        value = minValue;
+    } else if (value > maxValue) {
+        value = maxValue;
+    }
+
+    input.value = value;
+}
+
+document.querySelector('#select-version').addEventListener('change', ()=>{
+    let val = document.querySelector('#select-version').value;
+    if (val == "svd_xt"){
+        document.querySelector('#fps-version').value = "25"
+    }else{
+        document.querySelector('#fps-version').value = "14"
+    }
+})
 
 // Controllers
 document.addEventListener('DOMContentLoaded', function() {
@@ -183,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
 
 document.addEventListener('DOMContentLoaded', function() {
     const dropZone = document.getElementById('drop-zone');
@@ -229,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 imagePreview.style.display = 'block';
 
                 document.querySelector('#drop-zone .load').style.display = 'none'
+                document.querySelector('.generate').removeAttribute('disabled')
             };
     
             reader.readAsDataURL(file);
