@@ -212,4 +212,4 @@ def generate_video(frames, output_path):
 
 if __name__ == '__main__':
     socketio.start_background_task(target=background_task)
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, port=5434)
