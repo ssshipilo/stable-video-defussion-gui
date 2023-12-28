@@ -51,3 +51,6 @@ invisible-watermark==0.2.0
 xformers==0.0.23.post1
 SciPy==1.11.4
 einops==0.7.0
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+python-dotenv==1.0.0
