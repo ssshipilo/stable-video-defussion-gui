@@ -1,5 +1,9 @@
+# git clone https://github.com/ssshipilo/stable-video-defussion-gui.git
+# cd stable-video-defussion-gui
+
 import os
 import subprocess
+import time
 
 print("\033[92m[AUTO INSTALL]\033[0m Dependencies from requirements.txt are set")
 subprocess.run(['pip', 'install', '-r', 'requirements.txt'])
@@ -25,12 +29,17 @@ subprocess.run(['pip', 'install', 'torch==2.1.0+cu118', 'torchvision==2.1.0+cu11
 subprocess.run(['pip', 'install', 'xformers'])
 subprocess.run(['pip', 'install', '--ignore-installed', 'Flask'])
 subprocess.run(['pip', 'install', 'Flask-SocketIO'])
+subprocess.run(['pip', 'install', 'Flask-SQLAlchemy'])
+subprocess.run(['pip', 'install', 'Flask-Migrate'])
+subprocess.run(['pip', 'install', 'transformers'])
 
 # CUDA ограничитель 128, потому что ему хоть дай 80 гб, он всё сожрёт
 subprocess.run(['PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_mb:128'])
 
 print("\033[92m[AUTO INSTALL]\033[0m Successful!!!")
 os.makedirs('checkpoints', exist_ok=True)
+    
+time.sleep(2)
 
 # Скачивание модели обученной на 25 кадрах
 print("\033[92m[AUTO INSTALL]\033[0m Download an enlarged model trained on video at 25 fps")
@@ -49,3 +58,6 @@ try:
 except subprocess.CalledProcessError as e:
     print(f"Error: {e}")
 print("\033[92m[AUTO INSTALL]\033[0m Successful!!!")
+
+time.sleep(2)
+subprocess.run(['python', 'server.py'])
